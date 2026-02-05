@@ -110,7 +110,7 @@ class CurityPluginDevPlugin : Plugin<Project> {
             testClassesDirs = testSourceSet.output.classesDirs
             classpath = testSourceSet.runtimeClasspath
 
-            dependsOn(project.tasks.named("build"), project.tasks.named("createDeployDir"))
+            dependsOn(project.tasks.named("testClasses"), project.tasks.named("createDeployDir"))
             shouldRunAfter(project.tasks.named("test"))
 
             doFirst(Action<Task> {
