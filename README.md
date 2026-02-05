@@ -16,16 +16,16 @@ A Gradle plugin for Curity Identity Server plugin development that simplifies co
 
 ### Add the plugin repository
 
-In your project's `settings.gradle.kts`, add the GitHub Packages repository:
+In your project's `settings.gradle`, add the GitHub Packages repository:
 
-```kotlin
+```groovy
 pluginManagement {
     repositories {
         maven {
-            url = uri("https://maven.pkg.github.com/curity-ps/curity-plugin-dev-gradle-plugin-gradle-plugin")
+            url 'https://maven.pkg.github.com/curity-ps/curity-plugin-dev'
             credentials {
-                username = System.getenv("GITHUB_ACTOR") ?: project.findProperty("gpr.user") as String?
-                password = System.getenv("GITHUB_TOKEN") ?: project.findProperty("gpr.token") as String?
+                username = System.getenv('GITHUB_ACTOR') ?: project.findProperty('gpr.user')
+                password = System.getenv('GITHUB_TOKEN') ?: project.findProperty('gpr.token')
             }
         }
         gradlePluginPortal()
@@ -35,21 +35,21 @@ pluginManagement {
 
 ### Apply the plugin
 
-In your project's `build.gradle.kts`:
+In your project's `build.gradle`:
 
-```kotlin
+```groovy
 plugins {
-    id("io.curity.gradle.curity-plugin-dev") version "0.1.0"
+    id 'io.curity.gradle.curity-plugin-dev' version '0.1.0'
 }
 ```
 
 ## Configuration
 
-Configure the plugin in your `build.gradle.kts`:
+Configure the plugin in your `build.gradle`:
 
-```kotlin
+```groovy
 curityPluginDev {
-    integrationTestPattern.set("*IntegrationSpec")
+    integrationTestPattern = '*IntegrationSpec'
 }
 ```
 
@@ -88,60 +88,60 @@ gpr.token=ghp_xxxxxxxxxxxxx
 
 ### Complete Project Setup
 
-**settings.gradle.kts:**
+**settings.gradle:**
 
-```kotlin
+```groovy
 pluginManagement {
     repositories {
         maven {
-            url = uri("https://maven.pkg.github.com/curity-ps/curity-plugin-dev-gradle-plugin-gradle-plugin")
+            url 'https://maven.pkg.github.com/curity-ps/curity-plugin-dev'
             credentials {
-                username = System.getenv("GITHUB_ACTOR") ?: project.findProperty("gpr.user") as String?
-                password = System.getenv("GITHUB_TOKEN") ?: project.findProperty("gpr.token") as String?
+                username = System.getenv('GITHUB_ACTOR') ?: project.findProperty('gpr.user')
+                password = System.getenv('GITHUB_TOKEN') ?: project.findProperty('gpr.token')
             }
         }
         gradlePluginPortal()
     }
 }
 
-rootProject.name = "my-curity-plugin"
+rootProject.name = 'my-curity-plugin'
 ```
 
-**build.gradle.kts:**
+**build.gradle:**
 
-```kotlin
+```groovy
 plugins {
-    kotlin("jvm") version "1.9.22"
-    id("io.curity.gradle.curity-plugin-dev") version "0.1.0"
+    id 'org.jetbrains.kotlin.jvm' version '1.9.22'
+    id 'io.curity.gradle.curity-plugin-dev' version '0.1.0'
 }
 
-group = "com.example"
-version = "1.0.0"
+group = 'com.example'
+version = '1.0.0'
 
 repositories {
     mavenCentral()
     maven {
-        url = uri("https://repo.curity.io/releases")
+        url 'https://repo.curity.io/releases'
     }
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib'
     
     // Curity SDK
-    compileOnly("se.curity.identityserver:identityserver.sdk:8.6.0")
+    compileOnly 'se.curity.identityserver:identityserver.sdk:8.6.0'
     
     // Testing
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
-    testImplementation("org.testcontainers:testcontainers:1.19.0")
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    testImplementation 'org.testcontainers:testcontainers:1.19.0'
 }
 
 // Configure the plugin
 curityPluginDev {
-    integrationTestPattern.set("*IntegrationTest")
+    integrationTestPattern = '*IntegrationTest'
 }
 
-tasks.test {
+test {
     useJUnitPlatform()
 }
 ```
@@ -213,7 +213,7 @@ This section is for maintainers who want to publish new versions of the plugin.
    git add .
    git commit -m "Initial commit - Curity Plugin Dev"
    git branch -M main
-   git remote add origin https://github.com/curity-ps/curity-plugin-dev-gradle-plugin-gradle-plugin.git
+   git remote add origin https://github.com/curity-ps/curity-plugin-dev.git
    git push -u origin main
    ```
 
@@ -221,7 +221,7 @@ This section is for maintainers who want to publish new versions of the plugin.
 
 **Option 1: Publish via GitHub Release (Recommended)**
 
-1. Go to https://github.com/curity-ps/curity-plugin-dev-gradle-plugin-gradle-plugin/releases
+1. Go to https://github.com/curity-ps/curity-plugin-dev/releases
 2. Click "Draft a new release"
 3. Create a new tag (e.g., `v0.1.0`)
 4. Add release notes
@@ -231,7 +231,7 @@ The GitHub Action will automatically build and publish the plugin to GitHub Pack
 
 **Option 2: Manual Workflow Trigger**
 
-1. Go to https://github.com/curity-ps/curity-plugin-dev-gradle-plugin-gradle-plugin/actions
+1. Go to https://github.com/curity-ps/curity-plugin-dev/actions
 2. Select "Publish Plugin" workflow
 3. Click "Run workflow"
 4. Optionally specify a version
@@ -249,20 +249,20 @@ export GITHUB_TOKEN=your-personal-access-token
 ### Verifying Publication
 
 After publishing, the package will be available at:
-https://github.com/curity-ps/curity-plugin-dev-gradle-plugin/packages
+https://github.com/curity-ps/curity-plugin-dev/packages
 
 ### Updating the Version
 
 To publish a new version:
 
-1. Update the version in `build.gradle.kts`:
-   ```kotlin
-   version = "0.2.0"
+1. Update the version in `build.gradle`:
+   ```groovy
+   version = '0.2.0'
    ```
 
 2. Commit and push the change:
    ```bash
-   git add build.gradle.kts
+   git add build.gradle
    git commit -m "Bump version to 0.2.0"
    git push
    ```
