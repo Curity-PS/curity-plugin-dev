@@ -37,7 +37,7 @@ publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/curity-ps/curity-plugin-dev")
+            url = uri("https://maven.pkg.github.com/curity-ps/curity-plugin-dev-gradle-plugin")
             credentials {
                 username = System.getenv("GITHUB_ACTOR") ?: System.getenv("GITHUB_USERNAME")
                 password = System.getenv("GITHUB_TOKEN")
