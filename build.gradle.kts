@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "io.curity.gradle"
-version = "0.1.0"
+version = project.findProperty("version") as String? ?: "0.1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -37,7 +37,7 @@ publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/curity-ps/curity-plugin-dev-gradle-plugin")
+            url = uri("https://maven.pkg.github.com/curity-ps/curity-plugin-dev")
             credentials {
                 username = System.getenv("GITHUB_ACTOR") ?: System.getenv("GITHUB_USERNAME")
                 password = System.getenv("GITHUB_TOKEN")

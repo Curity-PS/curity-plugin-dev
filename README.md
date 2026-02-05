@@ -200,6 +200,58 @@ export LICENSE_KEY=your-curity-license-key
 
 This section is for maintainers who want to publish new versions of the plugin.
 
+### Version Management with Conventional Commits
+
+This project uses **Conventional Commits** and automatic versioning. You don't need to manually set version numbers or create releases.
+
+#### How It Works
+
+1. **Commit with conventional format**: When you push commits to `main`, the workflow analyzes your commit messages
+2. **Automatic versioning**: Based on commit types, a new version is calculated:
+   - `feat:` → Minor version bump (0.1.0 → 0.2.0)
+   - `fix:` → Patch version bump (0.1.0 → 0.1.1)
+   - `BREAKING CHANGE:` → Major version bump (0.1.0 → 1.0.0)
+   - Other types (docs, chore, etc.) → No release
+3. **Automatic release**: A GitHub release is created with changelog
+4. **Automatic publish**: The plugin is published to GitHub Packages
+
+#### Commit Message Format
+
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+**Types:**
+- `feat`: New feature (triggers minor version bump)
+- `fix`: Bug fix (triggers patch version bump)
+- `docs`: Documentation changes
+- `chore`: Maintenance tasks
+- `refactor`: Code refactoring
+- `test`: Adding tests
+- `ci`: CI/CD changes
+
+**Examples:**
+
+```bash
+# Patch release (0.1.0 → 0.1.1)
+git commit -m "fix: correct integration test task dependency"
+
+# Minor release (0.1.0 → 0.2.0)
+git commit -m "feat: add support for custom deployment paths"
+
+# Major release (0.1.0 → 1.0.0)
+git commit -m "feat: redesign plugin configuration
+
+BREAKING CHANGE: The curityPlugin extension has been renamed to curityPluginDev"
+
+# No release
+git commit -m "docs: update README with usage examples"
+```
+
 ### Initial Setup
 
 1. **Create the GitHub repository**
@@ -211,63 +263,43 @@ This section is for maintainers who want to publish new versions of the plugin.
    ```bash
    git init
    git add .
-   git commit -m "Initial commit - Curity Plugin Dev"
+   git commit -m "feat: initial commit of Curity Plugin Dev"
    git branch -M main
    git remote add origin https://github.com/curity-ps/curity-plugin-dev.git
    git push -u origin main
    ```
 
-### Publishing the Plugin
+3. **First release will be created automatically** based on your commit messages
 
-**Option 1: Publish via GitHub Release (Recommended)**
+### Publishing Workflow
 
-1. Go to https://github.com/curity-ps/curity-plugin-dev/releases
-2. Click "Draft a new release"
-3. Create a new tag (e.g., `v0.1.0`)
-4. Add release notes
-5. Click "Publish release"
+**Automatic (Recommended):**
 
-The GitHub Action will automatically build and publish the plugin to GitHub Packages.
+1. Make your changes
+2. Commit with conventional format:
+   ```bash
+   git add .
+   git commit -m "feat: add new deployment task"
+   git push
+   ```
+3. The GitHub Action will automatically:
+   - Detect the commit type
+   - Calculate the new version
+   - Create a git tag
+   - Generate changelog
+   - Create a GitHub release
+   - Publish to GitHub Packages
 
-**Option 2: Manual Workflow Trigger**
+**Manual Trigger:**
 
-1. Go to https://github.com/curity-ps/curity-plugin-dev/actions
-2. Select "Publish Plugin" workflow
-3. Click "Run workflow"
-4. Optionally specify a version
-5. Click "Run workflow"
-
-**Option 3: Local Publish (for testing)**
-
-```bash
-export GITHUB_ACTOR=your-username
-export GITHUB_TOKEN=your-personal-access-token
-
-./gradlew publish
-```
+You can also trigger the workflow manually from the Actions tab if needed.
 
 ### Verifying Publication
 
-After publishing, the package will be available at:
-https://github.com/curity-ps/curity-plugin-dev/packages
-
-### Updating the Version
-
-To publish a new version:
-
-1. Update the version in `build.gradle`:
-   ```groovy
-   version = '0.2.0'
-   ```
-
-2. Commit and push the change:
-   ```bash
-   git add build.gradle
-   git commit -m "Bump version to 0.2.0"
-   git push
-   ```
-
-3. Create a new release on GitHub with the corresponding tag (e.g., `v0.2.0`)
+After pushing, check:
+- **Actions**: https://github.com/curity-ps/curity-plugin-dev/actions
+- **Releases**: https://github.com/curity-ps/curity-plugin-dev/releases
+- **Packages**: https://github.com/curity-ps/curity-plugin-dev/packages
 
 ### Troubleshooting
 
