@@ -12,11 +12,11 @@ import org.gradle.api.tasks.testing.Test
 /**
  * Gradle plugin that registers common tasks for Curity Identity Server plugin projects:
  *
- * - **createDeployDir** – assembles the plugin JAR and its runtime dependencies into a
- *   single folder under `build/<project-name>`, ready to be copied into the server's
+ * - **createReleaseDir** – assembles the plugin JAR and its runtime dependencies into a
+ *   single folder under `build/release/<project-name>`, ready to be copied into the server's
  *   plugin directory.
  *
- * - **deployToLocal** – copies the deploy folder into a local Curity installation
+ * - **deployToLocal** – copies the release folder into a local Curity installation
  *   pointed to by the `IDSVR_HOME` environment variable.
  *
  * - **integrationTest** – runs integration tests (matched by a configurable pattern,
@@ -36,7 +36,7 @@ class CurityPluginDevPlugin : Plugin<Project> {
 
         project.afterEvaluate {
             configureTestExclusion(project, extension)
-            registerCreateDeployDir(project)
+            registerCreateReleaseDir(project)
             registerDeployToLocal(project)
             registerIntegrationTest(project, extension)
         }
@@ -44,21 +44,21 @@ class CurityPluginDevPlugin : Plugin<Project> {
 
     // ------------------------------------------------------------------ tasks
 
-    private fun registerCreateDeployDir(project: Project) {
-        val deployDir = project.layout.buildDirectory.dir(project.name)
+    private fun registerCreateReleaseDir(project: Project) {
+        val releaseDir = project.layout.buildDirectory.dir("release/${project.name}")
 
-        project.tasks.register("createDeployDir", Sync::class.java, Action<Sync> {
+        project.tasks.register("createReleaseDir", Sync::class.java, Action<Sync> {
             group = "build"
-            description = "Assembles the plugin JAR and runtime dependencies into a deploy folder"
+            description = "Assembles the plugin JAR and runtime dependencies into a release folder"
             dependsOn(project.tasks.named("jar"))
 
-            into(deployDir)
+            into(releaseDir)
             from(project.tasks.named("jar"))
             from(project.configurations.named("runtimeClasspath"))
 
             doLast(Action<Task> {
-                project.logger.lifecycle("Plugin prepared for deployment at: $deployDir")
-                project.logger.lifecycle("Copy the deploy folder to \$IDSVR_HOME/usr/share/plugins/")
+                project.logger.lifecycle("Plugin prepared for deployment at: $releaseDir")
+                project.logger.lifecycle("Copy the release folder to \$IDSVR_HOME/usr/share/plugins/")
             })
         })
     }
@@ -67,7 +67,7 @@ class CurityPluginDevPlugin : Plugin<Project> {
         project.tasks.register("deployToLocal", Sync::class.java, Action<Sync> {
             group = "deployment"
             description = "Deploys the plugin to a local Curity Identity Server"
-            dependsOn(project.tasks.named("createDeployDir"))
+            dependsOn(project.tasks.named("createReleaseDir"))
 
             doFirst(Action<Task> {
                 val idsvrHome = System.getenv("IDSVR_HOME")
@@ -82,7 +82,7 @@ class CurityPluginDevPlugin : Plugin<Project> {
 
             val idsvrHome = System.getenv("IDSVR_HOME")
             if (!idsvrHome.isNullOrBlank()) {
-                from(project.tasks.named("createDeployDir"))
+                from(project.tasks.named("createReleaseDir"))
                 into(project.file("$idsvrHome/usr/share/plugins/${project.name}"))
             }
 
@@ -110,7 +110,7 @@ class CurityPluginDevPlugin : Plugin<Project> {
             testClassesDirs = testSourceSet.output.classesDirs
             classpath = testSourceSet.runtimeClasspath
 
-            dependsOn(project.tasks.named("testClasses"), project.tasks.named("createDeployDir"))
+            dependsOn(project.tasks.named("testClasses"), project.tasks.named("createReleaseDir"))
             shouldRunAfter(project.tasks.named("test"))
 
             doFirst(Action<Task> {

@@ -4,9 +4,9 @@ A Gradle plugin for Curity Identity Server plugin development that simplifies co
 
 ## Features
 
-- **createDeployDir** – Assembles the plugin JAR and its runtime dependencies into a single folder under `build/<project-name>`, ready to be copied into the server's plugin directory.
+- **createReleaseDir** – Assembles the plugin JAR and its runtime dependencies into a single folder under `build/release/<project-name>`, ready to be copied into the server's plugin directory.
 
-- **deployToLocal** – Copies the deploy folder into a local Curity installation pointed to by the `IDSVR_HOME` environment variable.
+- **deployToLocal** – Copies the release folder into a local Curity installation pointed to by the `IDSVR_HOME` environment variable.
 
 - **integrationTest** – Runs integration tests (matched by a configurable pattern, default `*IntegrationSpec`) in a separate Test task. Requires `LICENSE_KEY` to be set and forwards it to the test JVM. The regular `test` task automatically excludes the same pattern so integration tests never run during a normal build.
 
@@ -68,14 +68,7 @@ To use this plugin, you'll need to authenticate with GitHub Packages.
 5. Click "Generate token"
 6. Copy the token
 
-### Option 1: Environment Variables
-
-```bash
-export GITHUB_ACTOR=your-github-username
-export GITHUB_TOKEN=ghp_xxxxxxxxxxxxx
-```
-
-### Option 2: Gradle Properties
+### Option 1: Gradle Properties
 
 Add to your `~/.gradle/gradle.properties`:
 
@@ -83,6 +76,16 @@ Add to your `~/.gradle/gradle.properties`:
 gpr.user=your-github-username
 gpr.token=ghp_xxxxxxxxxxxxx
 ```
+
+### Option 2: Environment Variables
+
+This is mainly used by github actions, but you can also set these in your local environment:
+
+```bash
+export GITHUB_ACTOR=your-github-username
+export GITHUB_TOKEN=ghp_xxxxxxxxxxxxx
+```
+
 
 ## Usage Examples
 
@@ -154,10 +157,10 @@ test {
 # Build your plugin
 ./gradlew build
 
-# Create deployment directory
-./gradlew createDeployDir
+# Create release directory
+./gradlew createReleaseDir
 
-# The plugin files are now in build/<project-name>/
+# The plugin files are now in build/release/<project-name>/
 ```
 
 **2. Testing Locally**
@@ -185,8 +188,8 @@ export LICENSE_KEY=your-curity-license-key
 **4. Full Build & Test Cycle**
 
 ```bash
-# Run all tests and create deployment
-./gradlew clean build integrationTest createDeployDir
+# Run all tests and create release
+./gradlew clean build integrationTest createReleaseDir
 ```
 
 ### Environment Variables Reference
