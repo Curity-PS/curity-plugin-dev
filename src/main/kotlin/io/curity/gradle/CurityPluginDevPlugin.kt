@@ -8,6 +8,7 @@ import org.gradle.api.Task
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.Sync
 import org.gradle.api.tasks.testing.Test
+import java.io.File
 
 /**
  * Gradle plugin that registers common tasks for Curity Identity Server plugin projects:
@@ -70,24 +71,26 @@ class CurityPluginDevPlugin : Plugin<Project> {
             dependsOn(project.tasks.named("createReleaseDir"))
 
             doFirst(Action<Task> {
-                val idsvrHome = System.getenv("IDSVR_HOME")
+                val idsvrHome = resolveEnv(project, "IDSVR_HOME")
                 if (idsvrHome.isNullOrBlank()) {
                     throw GradleException(
-                        "IDSVR_HOME environment variable is not set.\n" +
+                        "IDSVR_HOME is not set.\n" +
                             "Please set it to your Curity Identity Server installation directory:\n" +
-                            "  export IDSVR_HOME=/path/to/idsvr"
+                            "Set it as an environment variable or in a .env file in the project root:\n" +
+                            "  export IDSVR_HOME=/path/to/idsvr\n" +
+                            "  # or create .env with: IDSVR_HOME=/path/to/idsvr"
                     )
                 }
             })
 
-            val idsvrHome = System.getenv("IDSVR_HOME")
+            val idsvrHome = resolveEnv(project, "IDSVR_HOME")
             if (!idsvrHome.isNullOrBlank()) {
                 from(project.tasks.named("createReleaseDir"))
                 into(project.file("$idsvrHome/usr/share/plugins/${project.name}"))
             }
 
             doLast(Action<Task> {
-                val home = System.getenv("IDSVR_HOME")
+                val home = resolveEnv(project, "IDSVR_HOME")
                 project.logger.lifecycle("Plugin installed to: $home/usr/share/plugins/${project.name}")
                 project.logger.lifecycle("Restart the Curity Identity Server to load the plugin.")
             })
@@ -114,17 +117,19 @@ class CurityPluginDevPlugin : Plugin<Project> {
             shouldRunAfter(project.tasks.named("test"))
 
             doFirst(Action<Task> {
-                val licenseKey = System.getenv("LICENSE_KEY")
+                val licenseKey = resolveEnv(project, "LICENSE_KEY")
                 if (licenseKey.isNullOrBlank()) {
                     throw GradleException(
-                        "LICENSE_KEY environment variable is not set.\n" +
+                        "LICENSE_KEY is not set.\n" +
                             "A valid Curity license key is required to run integration tests.\n" +
-                            "  export LICENSE_KEY=<your-license-key>"
+                            "Set it as an environment variable or in a .env file in the project root:\n" +
+                            "  export LICENSE_KEY=<your-license-key>\n" +
+                            "  # or create .env with: LICENSE_KEY=<your-license-key>"
                     )
                 }
             })
 
-            environment("LICENSE_KEY", System.getenv("LICENSE_KEY") ?: "")
+            environment("LICENSE_KEY", resolveEnv(project, "LICENSE_KEY") ?: "")
 
             reports.html.outputLocation.set(
                 project.layout.buildDirectory.dir("reports/tests/integrationTest")
@@ -141,5 +146,38 @@ class CurityPluginDevPlugin : Plugin<Project> {
         project.tasks.named("test", Test::class.java, Action<Test> {
             filter.excludeTestsMatching(extension.integrationTestPattern.get())
         })
+    }
+
+    /**
+     * Resolve an environment variable, falling back to a `.env` file in the project root.
+     *
+     * Lookup order:
+     * 1. `System.getenv(name)` – real environment variable
+     * 2. Value from `<projectDir>/.env` file (standard `KEY=VALUE` format)
+     */
+    private fun resolveEnv(project: Project, name: String): String? {
+        System.getenv(name)?.takeIf { it.isNotBlank() }?.let { return it }
+        return loadDotEnv(project)[name]?.takeIf { it.isNotBlank() }
+    }
+
+    private fun loadDotEnv(project: Project): Map<String, String> {
+        val envFile = File(project.projectDir, ".env")
+        if (!envFile.isFile) {
+            project.logger.lifecycle("Found no .env file in ${project.projectDir}")
+            return emptyMap()
+        }
+
+        return envFile.readLines()
+            .map { it.trim() }
+            .filter { it.isNotEmpty() && !it.startsWith("#") }
+            .mapNotNull { line ->
+                val idx = line.indexOf('=')
+                if (idx > 0) {
+                    val key = line.substring(0, idx).trim()
+                    val value = line.substring(idx + 1).trim()
+                    key to value
+                } else null
+            }
+            .toMap()
     }
 }
