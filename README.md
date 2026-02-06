@@ -22,7 +22,7 @@ In your project's `settings.gradle`, add the GitHub Packages repository:
 pluginManagement {
     repositories {
         maven {
-            url 'https://maven.pkg.github.com/curity-ps/curity-plugin-dev'
+            url 'https://maven.pkg.github.com/Curity-PS/curity-plugin-dev'
             credentials {
                 username = System.getenv('GITHUB_ACTOR') ?: project.findProperty('gpr.user')
                 password = System.getenv('GITHUB_TOKEN') ?: project.findProperty('gpr.token')
@@ -97,7 +97,7 @@ export GITHUB_TOKEN=ghp_xxxxxxxxxxxxx
 pluginManagement {
     repositories {
         maven {
-            url 'https://maven.pkg.github.com/curity-ps/curity-plugin-dev'
+            url 'https://maven.pkg.github.com/Curity-PS/curity-plugin-dev'
             credentials {
                 username = System.getenv('GITHUB_ACTOR') ?: project.findProperty('gpr.user')
                 password = System.getenv('GITHUB_TOKEN') ?: project.findProperty('gpr.token')
@@ -259,7 +259,7 @@ git commit -m "docs: update README with usage examples"
 ### Initial Setup
 
 1. **Create the GitHub repository**
-   - Go to https://github.com/curity-ps
+   - Go to https://github.com/Curity-PS
    - Create a new repository named `curity-plugin-dev`
    - Initialize with this code
 
@@ -269,7 +269,7 @@ git commit -m "docs: update README with usage examples"
    git add .
    git commit -m "feat: initial commit of Curity Plugin Dev"
    git branch -M main
-   git remote add origin https://github.com/curity-ps/curity-plugin-dev.git
+   git remote add origin https://github.com/Curity-PS/curity-plugin-dev.git
    git push -u origin main
    ```
 
@@ -285,7 +285,7 @@ git commit -m "docs: update README with usage examples"
    ```
 
 2. Go to the GitHub Actions tab:
-   - Navigate to https://github.com/curity-ps/curity-plugin-dev/actions
+   - Navigate to https://github.com/Curity-PS/curity-plugin-dev/actions
    - Select "Publish Plugin" workflow
    - Click "Run workflow"
    - The workflow will:
@@ -301,9 +301,9 @@ git commit -m "docs: update README with usage examples"
 ### Verifying Publication
 
 After pushing, check:
-- **Actions**: https://github.com/curity-ps/curity-plugin-dev/actions
-- **Releases**: https://github.com/curity-ps/curity-plugin-dev/releases
-- **Packages**: https://github.com/curity-ps/curity-plugin-dev/packages
+- **Actions**: https://github.com/Curity-PS/curity-plugin-dev/actions
+- **Releases**: https://github.com/Curity-PS/curity-plugin-dev/releases
+- **Packages**: https://github.com/Curity-PS/curity-plugin-dev/packages
 
 ### Troubleshooting
 

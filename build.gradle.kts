@@ -26,18 +26,15 @@ gradlePlugin {
 }
 
 publishing {
-    publications {
-        create<MavenPublication>("pluginMaven") {
-            groupId = "io.curity.gradle"
-            artifactId = "curity-plugin-dev"
-            version = project.version.toString()
-        }
+    publications.withType<MavenPublication> {
+        // Ensure all publications use the same artifact name
+        artifactId = project.name
     }
 
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/curity-ps/curity-plugin-dev-gradle-plugin")
+            url = uri("https://maven.pkg.github.com/Curity-PS/${project.name}")
             credentials {
                 username = System.getenv("GITHUB_ACTOR") ?: System.getenv("GITHUB_USERNAME")
                 password = System.getenv("GITHUB_TOKEN")
