@@ -205,18 +205,19 @@ This section is for maintainers who want to publish new versions of the plugin.
 
 ### Version Management with Conventional Commits
 
-This project uses **Conventional Commits** and automatic versioning. You don't need to manually set version numbers or create releases.
+This project uses **Conventional Commits** and automatic versioning. You don't need to manually set version numbers.
 
 #### How It Works
 
-1. **Commit with conventional format**: When you push commits to `main`, the workflow analyzes your commit messages
-2. **Automatic versioning**: Based on commit types, a new version is calculated:
+1. **Commit with conventional format**: Push commits to `main` using conventional commit messages
+2. **Manual workflow trigger**: When ready to release, manually trigger the "Publish Plugin" workflow from GitHub Actions
+3. **Automatic versioning**: The workflow analyzes commits and calculates a new version based on commit types:
    - `feat:` → Minor version bump (0.1.0 → 0.2.0)
    - `fix:` → Patch version bump (0.1.0 → 0.1.1)
    - `BREAKING CHANGE:` → Major version bump (0.1.0 → 1.0.0)
    - Other types (docs, chore, etc.) → No release
-3. **Automatic release**: A GitHub release is created with changelog
-4. **Automatic publish**: The plugin is published to GitHub Packages
+4. **Automatic release**: A GitHub release is created with changelog
+5. **Automatic publish**: The plugin is published to GitHub Packages
 
 #### Commit Message Format
 
@@ -272,30 +273,30 @@ git commit -m "docs: update README with usage examples"
    git push -u origin main
    ```
 
-3. **First release will be created automatically** based on your commit messages
-
 ### Publishing Workflow
 
-**Automatic (Recommended):**
+**Manual Trigger:**
 
-1. Make your changes
-2. Commit with conventional format:
+1. Make your changes and commit with conventional format:
    ```bash
    git add .
    git commit -m "feat: add new deployment task"
    git push
    ```
-3. The GitHub Action will automatically:
-   - Detect the commit type
-   - Calculate the new version
-   - Create a git tag
-   - Generate changelog
-   - Create a GitHub release
-   - Publish to GitHub Packages
 
-**Manual Trigger:**
+2. Go to the GitHub Actions tab:
+   - Navigate to https://github.com/curity-ps/curity-plugin-dev/actions
+   - Select "Publish Plugin" workflow
+   - Click "Run workflow"
+   - The workflow will:
+     - Analyze commits since last release
+     - Calculate the new version based on conventional commits
+     - Create a git tag
+     - Generate changelog
+     - Create a GitHub release
+     - Publish to GitHub Packages
 
-You can also trigger the workflow manually from the Actions tab if needed.
+**Note:** Releases are created manually to give you control over when versions are published. The workflow will skip release creation if there are no release-worthy commits (only docs, chore, etc.) since the last tag.
 
 ### Verifying Publication
 
