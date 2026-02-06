@@ -27,8 +27,9 @@ gradlePlugin {
 
 publishing {
     publications.withType<MavenPublication> {
-        // Ensure all publications use the same artifact name
-        artifactId = project.name
+        // Ensure all publications use the same group and artifact coordinates
+        groupId = "io.curity.gradle"
+        artifactId = "curity-plugin-dev"
     }
 
     repositories {
