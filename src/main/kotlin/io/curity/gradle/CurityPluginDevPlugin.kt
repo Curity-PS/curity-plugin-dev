@@ -7,6 +7,7 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.Sync
+import org.gradle.api.tasks.bundling.Zip
 import org.gradle.api.tasks.testing.Test
 import java.io.File
 
@@ -16,6 +17,9 @@ import java.io.File
  * - **createReleaseDir** – assembles the plugin JAR and its runtime dependencies into a
  *   single folder under `build/release/<project-name>`, ready to be copied into the server's
  *   plugin directory.
+ *
+ * - **createRelease** – creates a zip file from the release directory, ready for distribution.
+ *   The zip is placed in `build/distributions`.
  *
  * - **deployToLocal** – copies the release folder into a local Curity installation
  *   pointed to by the `IDSVR_HOME` environment variable.
@@ -38,6 +42,7 @@ class CurityPluginDevPlugin : Plugin<Project> {
         project.afterEvaluate {
             configureTestExclusion(project, extension)
             registerCreateReleaseDir(project)
+            registerCreateRelease(project)
             registerDeployToLocal(project)
             registerIntegrationTest(project, extension)
         }
@@ -60,6 +65,25 @@ class CurityPluginDevPlugin : Plugin<Project> {
             doLast(Action<Task> {
                 project.logger.lifecycle("Plugin prepared for deployment at: $releaseDir")
                 project.logger.lifecycle("Copy the release folder to \$IDSVR_HOME/usr/share/plugins/")
+            })
+        })
+    }
+
+    private fun registerCreateRelease(project: Project) {
+        val releaseDir = project.layout.buildDirectory.dir("release/${project.name}")
+
+        project.tasks.register("createRelease", Zip::class.java, Action<Zip> {
+            group = "build"
+            description = "Creates a zip file from the release directory"
+            dependsOn(project.tasks.named("createReleaseDir"))
+
+            archiveFileName.set("plugin-artifacts.zip")
+            destinationDirectory.set(project.layout.buildDirectory.dir("distributions"))
+
+            from(releaseDir)
+
+            doLast(Action<Task> {
+                project.logger.lifecycle("Release zip created at: ${archiveFile.get()}")
             })
         })
     }

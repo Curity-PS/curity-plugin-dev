@@ -6,6 +6,8 @@ A Gradle plugin for Curity Identity Server plugin development that simplifies co
 
 - **createReleaseDir** – Assembles the plugin JAR and its runtime dependencies into a single folder under `build/release/<project-name>`, ready to be copied into the server's plugin directory.
 
+- **createRelease** – Creates a zip file from the release directory, ready for distribution. The zip is placed in `build/distributions/plugin-artifacts.zip`.
+
 - **deployToLocal** – Copies the release folder into a local Curity installation pointed to by the `IDSVR_HOME` environment variable.
 
 - **integrationTest** – Runs integration tests (matched by a configurable pattern, default `*IntegrationSpec`) in a separate Test task. Requires `LICENSE_KEY` to be set and forwards it to the test JVM. The regular `test` task automatically excludes the same pattern so integration tests never run during a normal build.
@@ -161,6 +163,11 @@ test {
 ./gradlew createReleaseDir
 
 # The plugin files are now in build/release/<project-name>/
+
+# Create a distributable zip file
+./gradlew createRelease
+
+# The zip file is now in build/distributions/plugin-artifacts.zip
 ```
 
 **2. Testing Locally**
@@ -190,6 +197,9 @@ export LICENSE_KEY=your-curity-license-key
 ```bash
 # Run all tests and create release
 ./gradlew clean build integrationTest createReleaseDir
+
+# Or create a distributable zip file
+./gradlew clean build integrationTest createRelease
 ```
 
 ### Environment Variables Reference
