@@ -26,8 +26,8 @@ pluginManagement {
         maven {
             url 'https://maven.pkg.github.com/Curity-PS/curity-plugin-dev'
             credentials {
-                username = System.getenv('GITHUB_ACTOR') ?: project.findProperty('gpr.user')
-                password = System.getenv('GITHUB_TOKEN') ?: project.findProperty('gpr.token')
+                username = System.getenv('GITHUB_ACTOR') ?: providers.gradleProperty('gpr.user')
+                password = System.getenv('GITHUB_TOKEN') ?: providers.gradleProperty('gpr.token')
             }
         }
         gradlePluginPortal()
@@ -385,6 +385,22 @@ GitHub Packages is convenient when:
 - You need private package hosting
 - You want automated publishing via GitHub Actions
 
+## Testing Workflows Locally
+
+You can test the GitHub Actions workflows locally using [act](https://github.com/nektos/act). See [LOCAL_TESTING.md](LOCAL_TESTING.md) for detailed instructions.
+
+Quick start:
+```bash
+# List available workflows
+act -l
+
+# Test the publish workflow (without actually publishing)
+./test-workflow.sh
+
+# Test with a specific version
+./test-workflow.sh --version 0.3.0
+```
+
 ## Contributing
 
 Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
@@ -392,4 +408,3 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for gui
 ## License
 
 Copyright © Curity AB
-
