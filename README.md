@@ -42,7 +42,7 @@ In your project's `build.gradle`:
 
 ```groovy
 plugins {
-    id 'io.curity.gradle.curity-plugin-dev' version '0.4.0'
+    id 'io.curity.gradle.curity-plugin-dev' version 'x.y.z'
 }
 ```
 
