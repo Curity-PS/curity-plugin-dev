@@ -21,13 +21,15 @@ import java.io.File
  * - **createRelease** – creates a zip file from the release directory, ready for distribution.
  *   The zip is placed in `build/distributions`.
  *
- * - **deployToLocal** – copies the release folder into a local Curity installation
- *   pointed to by the `IDSVR_HOME` environment variable.
+ * - **deployToLocal** – copies the release folder into a local Curity installation,
+ *   using the server home directory resolved from the `IDSVR_HOME` environment variable,
+ *   the project `.env` file, or the Gradle property `curity.idsvrHome`.
  *
  * - **integrationTest** – runs integration tests (matched by a configurable pattern,
- *   default `*IntegrationSpec`) in a separate Test task.  Requires `LICENSE_KEY` to be
- *   set and forwards it to the test JVM.  The regular `test` task automatically excludes
- *   the same pattern so integration tests never run during a normal build.
+ *   default `*IntegrationSpec`) in a separate Test task.  Requires a license key, resolved
+ *   from the `LICENSE_KEY` environment variable, the project `.env` file, or the Gradle
+ *   property `curity.licenseKey`, and forwards it to the test JVM. The regular `test` task
+ *   automatically excludes the same pattern so integration tests never run during a normal build.
  */
 class CurityPluginDevPlugin : Plugin<Project> {
 
