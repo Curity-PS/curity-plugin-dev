@@ -64,7 +64,7 @@ class CurityPluginDevPlugin : Plugin<Project> {
             from(project.configurations.named("runtimeClasspath"))
 
             doLast(Action<Task> {
-                project.logger.lifecycle("Plugin prepared for deployment at: $releaseDir")
+                project.logger.lifecycle("Plugin prepared for deployment at: ${releaseDir.get().asFile}")
                 project.logger.lifecycle("Copy the release folder to \$IDSVR_HOME/usr/share/plugins/")
             })
         })
