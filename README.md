@@ -203,7 +203,7 @@ The `releaseDir` property is useful when your tests need to know the path to the
 
 ```groovy
 // build.gradle
-test {
+integrationTest {
     systemProperty 'releaseDir', curityPluginDev.releaseDir.get().asFile.absolutePath
 }
 ```
