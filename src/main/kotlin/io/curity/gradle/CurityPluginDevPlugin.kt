@@ -158,6 +158,8 @@ class CurityPluginDevPlugin : Plugin<Project> {
 
             environment("LICENSE_KEY", resolveEnv(project, "LICENSE_KEY") ?: "")
 
+            systemProperty("releaseDir", extension.releaseDir.get().asFile.absolutePath)
+
             reports.html.outputLocation.set(
                 project.layout.buildDirectory.dir("reports/tests/integrationTest")
             )

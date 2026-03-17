@@ -10,7 +10,7 @@ A Gradle plugin for Curity Identity Server plugin development that simplifies co
 
 - **deployToLocal** – Copies the release folder into a local Curity installation pointed to by the `IDSVR_HOME` environment variable.
 
-- **integrationTest** – Runs integration tests (matched by a configurable pattern, default `*IntegrationSpec`) in a separate Test task. Requires `LICENSE_KEY` to be set and forwards it to the test JVM. The regular `test` task automatically excludes the same pattern so integration tests never run during a normal build.
+- **integrationTest** – Runs integration tests (matched by a configurable pattern, default `*IntegrationSpec`) in a separate Test task. Requires `LICENSE_KEY` to be set and forwards it to the test JVM. The regular `test` task automatically excludes the same pattern so integration tests never run during a normal build. The `releaseDir` system property is automatically passed to the test JVM, pointing to `build/release/<project-name>`, so tests can locate the plugin artifacts without hard-coding the path.
 
 ## Installation
 
@@ -212,20 +212,12 @@ export LICENSE_KEY=your-curity-license-key
 
 **4. Referencing the Release Directory in Tests**
 
-The `releaseDir` property is useful when your tests need to know the path to the assembled plugin artifacts, e.g. when mounting them into a Testcontainer. Pass it as a system property to avoid hardcoding the path:
+The `releaseDir` system property is automatically available in your tests, pointing to the directory containing the assembled plugin JARs. This is useful e.g. when mounting them into a Testcontainer. In a Spock test:
 
 ```groovy
-// build.gradle
-integrationTest {
-    systemProperty 'releaseDir', curityPluginDev.releaseDir.get().asFile.absolutePath
-}
-```
+class MyPluginIntegrationSpec extends Specification {
 
-Then in a Spock test:
-
-```groovy
-class MyPluginSpec extends Specification {
-    def releaseDir = System.getProperty('releaseDir')
+    static String releaseDir = System.getProperty("releaseDir")
 
     def "plugin artifacts are available"() {
         expect:
