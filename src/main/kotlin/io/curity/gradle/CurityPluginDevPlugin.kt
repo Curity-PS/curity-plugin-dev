@@ -15,8 +15,8 @@ import java.io.File
  * Gradle plugin that registers common tasks for Curity Identity Server plugin projects:
  *
  * - **createReleaseDir** – assembles the plugin JAR and its runtime dependencies into a
- *   single folder under `build/release/<project-name>`, ready to be copied into the server's
- *   plugin directory.
+ *   single folder, by default under `build/release/<project-name>`, ready to be copied into
+ *   the server's plugin directory. The location can be overridden via `curityPluginDev.releaseDir`.
  *
  * - **createRelease** – creates a zip file from the release directory, ready for distribution.
  *   The zip is placed in `build/distributions`.
