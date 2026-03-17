@@ -15,8 +15,8 @@ import java.io.File
  * Gradle plugin that registers common tasks for Curity Identity Server plugin projects:
  *
  * - **createReleaseDir** – assembles the plugin JAR and its runtime dependencies into a
- *   single folder under `build/release/<project-name>`, ready to be copied into the server's
- *   plugin directory.
+ *   single folder, by default under `build/release/<project-name>`, ready to be copied into
+ *   the server's plugin directory. The location can be overridden via `curityPluginDev.releaseDir`.
  *
  * - **createRelease** – creates a zip file from the release directory, ready for distribution.
  *   The zip is placed in `build/distributions`.
@@ -38,11 +38,12 @@ class CurityPluginDevPlugin : Plugin<Project> {
             CurityPluginDevExtension::class.java
         )
         extension.integrationTestPattern.convention("*IntegrationSpec")
+        extension.releaseDir.convention(project.layout.buildDirectory.dir("release/${project.name}"))
 
         project.afterEvaluate {
             configureTestExclusion(project, extension)
-            registerCreateReleaseDir(project)
-            registerCreateRelease(project)
+            registerCreateReleaseDir(project, extension)
+            registerCreateRelease(project, extension)
             registerDeployToLocal(project)
             registerIntegrationTest(project, extension)
         }
@@ -50,8 +51,8 @@ class CurityPluginDevPlugin : Plugin<Project> {
 
     // ------------------------------------------------------------------ tasks
 
-    private fun registerCreateReleaseDir(project: Project) {
-        val releaseDir = project.layout.buildDirectory.dir("release/${project.name}")
+    private fun registerCreateReleaseDir(project: Project, extension: CurityPluginDevExtension) {
+        val releaseDir = extension.releaseDir
 
         project.tasks.register("createReleaseDir", Sync::class.java, Action<Sync> {
             group = "build"
@@ -63,14 +64,14 @@ class CurityPluginDevPlugin : Plugin<Project> {
             from(project.configurations.named("runtimeClasspath"))
 
             doLast(Action<Task> {
-                project.logger.lifecycle("Plugin prepared for deployment at: $releaseDir")
+                project.logger.lifecycle("Plugin prepared for deployment at: ${releaseDir.get().asFile}")
                 project.logger.lifecycle("Copy the release folder to \$IDSVR_HOME/usr/share/plugins/")
             })
         })
     }
 
-    private fun registerCreateRelease(project: Project) {
-        val releaseDir = project.layout.buildDirectory.dir("release/${project.name}")
+    private fun registerCreateRelease(project: Project, extension: CurityPluginDevExtension) {
+        val releaseDir = extension.releaseDir
 
         project.tasks.register("createRelease", Zip::class.java, Action<Zip> {
             group = "build"

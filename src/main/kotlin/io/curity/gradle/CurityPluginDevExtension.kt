@@ -1,5 +1,6 @@
 package io.curity.gradle
 
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
 
 /**
@@ -19,4 +20,15 @@ interface CurityPluginDevExtension {
      * Defaults to `*IntegrationSpec`.
      */
     val integrationTestPattern: Property<String>
+
+    /**
+     * The directory where the plugin release artifacts are assembled.
+     * Defaults to `build/release/<project-name>`.
+     *
+     * This is useful for referencing the release directory in tests, e.g.:
+     * ```
+     * def releaseDir = project.curityPluginDev.releaseDir.get().asFile.absolutePath
+     * ```
+     */
+    val releaseDir: DirectoryProperty
 }
