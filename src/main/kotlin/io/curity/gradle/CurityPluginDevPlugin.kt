@@ -173,23 +173,36 @@ class CurityPluginDevPlugin : Plugin<Project> {
     }
 
     /**
-     * Resolve an environment variable, falling back to a `.env` file in the project root.
+     * Resolve an environment variable, falling back to env file and Gradle properties.
      *
      * Lookup order:
      * 1. `System.getenv(name)` – real environment variable
      * 2. Value from `<projectDir>/.env` file (standard `KEY=VALUE` format)
+     * 3. Gradle property (e.g. `curity.licenseKey` for `LICENSE_KEY`)
      */
     private fun resolveEnv(project: Project, name: String): String? {
         System.getenv(name)?.takeIf { it.isNotBlank() }?.let { return it }
-        return loadDotEnv(project)[name]?.takeIf { it.isNotBlank() }
+
+        val projectEnv = loadEnvFile(File(project.projectDir, ".env"))
+        projectEnv[name]?.takeIf { it.isNotBlank() }?.let { return it }
+
+        val gradlePropertyName = GRADLE_PROPERTY_NAMES[name]
+        if (gradlePropertyName != null) {
+            project.findProperty(gradlePropertyName)?.toString()?.takeIf { it.isNotBlank() }?.let { return it }
+        }
+
+        return null
     }
 
-    private fun loadDotEnv(project: Project): Map<String, String> {
-        val envFile = File(project.projectDir, ".env")
-        if (!envFile.isFile) {
-            project.logger.lifecycle("Found no .env file in ${project.projectDir}")
-            return emptyMap()
-        }
+    private companion object {
+        val GRADLE_PROPERTY_NAMES = mapOf(
+            "LICENSE_KEY" to "curity.licenseKey",
+            "IDSVR_HOME" to "curity.idsvrHome"
+        )
+    }
+
+    private fun loadEnvFile(envFile: File): Map<String, String> {
+        if (!envFile.isFile) return emptyMap()
 
         return envFile.readLines()
             .map { it.trim() }
