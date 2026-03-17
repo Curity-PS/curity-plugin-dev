@@ -47,13 +47,18 @@ plugins {
 
 ## Configuration
 
-Configure the plugin in your `build.gradle`:
+Optionally configure the plugin in your `build.gradle`:
 
 ```groovy
 curityPluginDev {
     integrationTestPattern = '*IntegrationSpec'
 }
 ```
+
+| Property                 | Type               | Default                             | Description                                      |
+|--------------------------|--------------------|-------------------------------------|--------------------------------------------------|
+| `integrationTestPattern` | `String`           | `*IntegrationSpec`                  | Pattern used to identify integration test classes |
+| `releaseDir`             | `DirectoryProperty`| `build/release/<project-name>`      | Directory where release artifacts are assembled   |
 
 ## GitHub Authentication
 
@@ -192,7 +197,31 @@ export LICENSE_KEY=your-curity-license-key
 ./gradlew integrationTest
 ```
 
-**4. Full Build & Test Cycle**
+**4. Referencing the Release Directory in Tests**
+
+The `releaseDir` property is useful when your tests need to know the path to the assembled plugin artifacts, e.g. when mounting them into a Testcontainer. Pass it as a system property to avoid hardcoding the path:
+
+```groovy
+// build.gradle
+test {
+    systemProperty 'releaseDir', curityPluginDev.releaseDir.get().asFile.absolutePath
+}
+```
+
+Then in a Spock test:
+
+```groovy
+class MyPluginSpec extends Specification {
+    def releaseDir = System.getProperty('releaseDir')
+
+    def "plugin artifacts are available"() {
+        expect:
+        new File(releaseDir).exists()
+    }
+}
+```
+
+**5. Full Build & Test Cycle**
 
 ```bash
 # Run all tests and create release

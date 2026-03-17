@@ -38,11 +38,12 @@ class CurityPluginDevPlugin : Plugin<Project> {
             CurityPluginDevExtension::class.java
         )
         extension.integrationTestPattern.convention("*IntegrationSpec")
+        extension.releaseDir.convention(project.layout.buildDirectory.dir("release/${project.name}"))
 
         project.afterEvaluate {
             configureTestExclusion(project, extension)
-            registerCreateReleaseDir(project)
-            registerCreateRelease(project)
+            registerCreateReleaseDir(project, extension)
+            registerCreateRelease(project, extension)
             registerDeployToLocal(project)
             registerIntegrationTest(project, extension)
         }
@@ -50,8 +51,8 @@ class CurityPluginDevPlugin : Plugin<Project> {
 
     // ------------------------------------------------------------------ tasks
 
-    private fun registerCreateReleaseDir(project: Project) {
-        val releaseDir = project.layout.buildDirectory.dir("release/${project.name}")
+    private fun registerCreateReleaseDir(project: Project, extension: CurityPluginDevExtension) {
+        val releaseDir = extension.releaseDir
 
         project.tasks.register("createReleaseDir", Sync::class.java, Action<Sync> {
             group = "build"
@@ -69,8 +70,8 @@ class CurityPluginDevPlugin : Plugin<Project> {
         })
     }
 
-    private fun registerCreateRelease(project: Project) {
-        val releaseDir = project.layout.buildDirectory.dir("release/${project.name}")
+    private fun registerCreateRelease(project: Project, extension: CurityPluginDevExtension) {
+        val releaseDir = extension.releaseDir
 
         project.tasks.register("createRelease", Zip::class.java, Action<Zip> {
             group = "build"
